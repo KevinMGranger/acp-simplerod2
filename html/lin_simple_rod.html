@@ -1,0 +1,191 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>lin_simple_rod</title><meta name="generator" content="MATLAB 7.14"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2013-01-17"><meta name="DC.source" content="lin_simple_rod.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, tt, code { font-size:12px; }
+pre { margin:0px 0px 20px; }
+pre.error { color:red; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> [ temp_array ]  =  lin_simple_rod ( num, TL, TR )
+<span class="comment">%</span>
+<span class="comment">%DESCRIPTION</span>
+<span class="comment">%    Determine the temperature as a function of position for a heated rod.</span>
+<span class="comment">%</span>
+<span class="comment">%ARGUMENTS</span>
+<span class="comment">%</span>
+<span class="comment">%    num                        is the number of pieces into which</span>
+<span class="comment">%                                  the rod is divided for numerical</span>
+<span class="comment">%                                  calculations</span>
+<span class="comment">%</span>
+<span class="comment">%    TL                         is the temperature of the left end</span>
+<span class="comment">%                                  (units are Kelvin)</span>
+<span class="comment">%</span>
+<span class="comment">%    TR                         is the temperature of the right end</span>
+<span class="comment">%                                  (units are Kelvin)</span>
+<span class="comment">%</span>
+<span class="comment">%RETURNS</span>
+<span class="comment">%</span>
+<span class="comment">%    temp_array                 is a 1-by-num maxtrix of</span>
+<span class="comment">%                                  temperatures, one per piece of rod</span>
+<span class="comment">%                                  (units are Kelvin)</span>
+<span class="comment">%AUTHOR</span>
+<span class="comment">%    Kevin Granger &lt;kmg2728@rit.edu&gt;</span>
+<span class="comment">%    2013-01-16</span>
+
+<span class="comment">%{
+</span><span class="comment">Additional Documentation:
+</span><span class="comment">
+</span><span class="comment">MATH
+</span><span class="comment">
+</span><span class="comment">    This program attempts to solve the partial differential equation
+</span><span class="comment">    d^2 T / dx^2 = 0 through linear algebra. We create our equations
+</span><span class="comment">    holding unknowns using the "second difference" of each of the pieces
+</span><span class="comment">    of the rod.
+</span><span class="comment">
+</span><span class="comment">    These equations are related to the only two unknown values we have, TL
+</span><span class="comment">    and TR.
+</span><span class="comment">
+</span><span class="comment">%}
+</span>
+
+
+
+<span class="comment">% Check starting values :</span>
+<span class="keyword">if</span> TL &lt; 0 || TR &lt; 0
+    error(<span class="string">'Temperatures are given in Kelvin, and as such must be above absolute zero.'</span>)
+<span class="keyword">elseif</span> num &lt; 1 || rem(num,1) ~= 0
+    error(<span class="string">'You must give a positive, nonzero, integer number of pieces to break the rod into.'</span>)
+<span class="keyword">end</span>
+
+
+<span class="comment">% Create the equation matrix. It will always be diagonal, with a -2 on the</span>
+<span class="comment">% piece in question, and 1's on the adjacent pieces (unless it's an edge</span>
+<span class="comment">% piece, in which case the temperature sources are in the "answer" column</span>
+<span class="comment">% vector "B"</span>
+A = diag((ones(1,num)*-2)) + diag(ones(1,(num-1)),1) + diag(ones(1,(num-1)),-1);
+
+<span class="comment">% Populate the "answer" column vector.</span>
+B = [-TL zeros(1,num-2) -TR]';
+
+<span class="comment">% Perform the matrix divison.</span>
+temp_array = (A\B)';
+</pre><pre class="codeoutput">Error using lin_simple_rod (line 46)
+Not enough input arguments.
+</pre><p class="footer"><br>
+      Published with MATLAB&reg; 7.14<br></p></div><!--
+##### SOURCE BEGIN #####
+function [ temp_array ]  =  lin_simple_rod ( num, TL, TR )
+%
+%DESCRIPTION
+%    Determine the temperature as a function of position for a heated rod.
+%
+%ARGUMENTS
+%
+%    num                        is the number of pieces into which
+%                                  the rod is divided for numerical
+%                                  calculations
+%
+%    TL                         is the temperature of the left end
+%                                  (units are Kelvin)
+%
+%    TR                         is the temperature of the right end
+%                                  (units are Kelvin)
+%
+%RETURNS
+%
+%    temp_array                 is a 1-by-num maxtrix of 
+%                                  temperatures, one per piece of rod
+%                                  (units are Kelvin)
+%AUTHOR
+%    Kevin Granger <kmg2728@rit.edu>
+%    2013-01-16
+
+%{
+Additional Documentation:
+
+MATH
+
+    This program attempts to solve the partial differential equation
+    d^2 T / dx^2 = 0 through linear algebra. We create our equations
+    holding unknowns using the "second difference" of each of the pieces
+    of the rod.
+
+    These equations are related to the only two unknown values we have, TL
+    and TR.
+
+%}
+
+
+
+
+% Check starting values :
+if TL < 0 || TR < 0
+    error('Temperatures are given in Kelvin, and as such must be above absolute zero.')
+elseif num < 1 || rem(num,1) ~= 0
+    error('You must give a positive, nonzero, integer number of pieces to break the rod into.')
+end
+
+
+% Create the equation matrix. It will always be diagonal, with a -2 on the
+% piece in question, and 1's on the adjacent pieces (unless it's an edge
+% piece, in which case the temperature sources are in the "answer" column
+% vector "B"
+A = diag((ones(1,num)*-2)) + diag(ones(1,(num-1)),1) + diag(ones(1,(num-1)),-1);
+
+% Populate the "answer" column vector.
+B = [-TL zeros(1,num-2) -TR]';
+
+% Perform the matrix divison.
+temp_array = (A\B)';
+
+##### SOURCE END #####
+--></body></html>
